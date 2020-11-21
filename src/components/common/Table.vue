@@ -15,9 +15,9 @@
             @click="sortBy(head.field)"
           >
             {{ head.label }}
-            <span v-if="sortColumn === head.field && sortDirection">
-              <template v-if="sortDirection === 'asc'">&#9650;</template>
-              <template v-else-if="sortDirection === 'desc'">&#9660;</template>
+            <span v-if="sortColumn === head.field && currentSortDirection">
+              <template v-if="currentSortDirection === 'asc'">&#9650;</template>
+              <template v-else-if="currentSortDirection === 'desc'">&#9660;</template>
             </span>
           </td>
         </tr>
@@ -71,7 +71,8 @@ export default {
     return {
       // sort
       sortColumn: '',
-      sortDirection: 'asc',
+      sortDirectionIndex: 0,
+      sortDirectionCombination: ['', 'asc', 'desc'],
 
       // pagination
       currentPage: 1,
@@ -81,6 +82,9 @@ export default {
     }
   },
   computed: {
+    currentSortDirection () {
+      return this.sortDirectionCombination[this.sortDirectionIndex]
+    },
     filteredRows () {
       // Include only described in headers row fields
       return this.rows.map(row => {
@@ -90,9 +94,13 @@ export default {
       })
     },
     sortedRows () {
+      if (this.currentSortDirection === '') {
+        return this.filteredRows
+      }
+
       return [...this.filteredRows].sort((a, b) => {
         let modifier = 1
-        if (this.sortDirection === 'desc') modifier = -1
+        if (this.currentSortDirection === 'desc') modifier = -1
         if (a[this.sortColumn] < b[this.sortColumn]) return -1 * modifier
         if (a[this.sortColumn] > b[this.sortColumn]) return 1 * modifier
         return 0
@@ -111,14 +119,20 @@ export default {
   methods: {
     sortBy (field) {
       if (this.sortColumn === field) {
-        this.sortDirection = this.sortDirection === 'asc'
-          ? 'desc'
-          : 'asc'
+        this.nextSortDirection()
         return
       }
 
       this.sortColumn = field
-      this.sortDirection = 'asc'
+      this.sortDirectionIndex = 1
+    },
+    nextSortDirection () {
+      if (this.sortDirectionIndex >= this.sortDirectionCombination.length - 1) {
+        this.sortDirectionIndex = 0
+        return
+      }
+
+      this.sortDirectionIndex++
     }
   }
 }
