@@ -5,7 +5,7 @@ const usersApi = axios.create({
 })
 
 export const fetchUsers = async () => {
-  const res = await usersApi.get('/?rows=10&id={index}&fullname={firstName}~{lastName}&company={business}&email={email}&uname={username}&address={addressObject}')
+  const res = await usersApi.get('/?rows=100&id={index}&fullname={firstName}~{lastName}&company={business}&email={email}&uname={username}&address={addressObject}')
 
   return res.data
 }

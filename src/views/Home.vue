@@ -5,16 +5,21 @@
       <template #pending>
         <Loader />
       </template>
-      <template>
-        <div class="table__wrapper">
-          <Table :rows="users" :headers="headers">
-            <!-- if we wanna style specific col -->
-            <template #col.email="{ row }">{{ row.email }}</template>
-          </Table>
-        </div>
-      </template>
+
       <template #rejected="error">
         {{ error.message }}
+      </template>
+
+      <template #default>
+        <div class="table__wrapper">
+          <Table
+            :rows="users"
+            :headers="headers"
+            :per-page="perPage"
+          >
+            <template #col.email="{ row }">{{ row.email }}</template> <!-- if we wanna style specific col -->
+          </Table>
+        </div>
       </template>
     </Promised>
   </div>
@@ -30,6 +35,8 @@ export default {
   components: { Loader, Table },
   data: () => ({
     usersFetchingPromise: null,
+    currentPage: 1,
+    perPage: 10,
     headers: [
       {
         label: 'Id',

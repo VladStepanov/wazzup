@@ -7,13 +7,18 @@
             class="table__head"
             v-for="(head, i) in headers"
             :key="head.label + i"
-            @click="sortBy(head.field)">
+            @click="sortBy(head.field)"
+          >
             {{ head.label }}
+            <span v-if="sortColumn === head.field">
+              <template v-if="sortDirection === 'asc'">&#9650;</template>
+              <template v-else-if="sortDirection === 'desc'">&#9660;</template>
+            </span>
           </td>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(row, i) in sortedRows" :key="i" @click="$emit('click:row', row)">
+        <tr v-for="(row, i) in paginatedRows" :key="i" @click="$emit('click:row', row)">
           <td v-for="(el, key) in row" :key="key">
             <slot :name="`col.${key}`" :row="row">
               {{ el }}
@@ -22,25 +27,45 @@
         </tr>
       </tbody>
     </table>
+    <div class="pagination__wrapper">
+      <Pagination
+        :current="currentPage"
+        :page-range="0"
+        :per-page="perPage"
+        :total="rows.length"
+        @page-change="page => currentPage = page"
+      />
+    </div>
   </div>
 </template>
 
 <script>
+import Pagination from '@/components/common/Pagination'
+
 export default {
   name: 'Table',
+  components: { Pagination },
   props: {
     headers: {
       type: Array,
-      default: () => []
+      validator: (headers) => headers.every(head => head.field && head.label),
+      default: () => ([])
     },
     rows: {
       type: Array,
       default: () => []
+    },
+
+    // pagination
+    perPage: {
+      type: Number,
+      default: 10
     }
   },
   data: () => ({
     sortColumn: '',
-    sortDirection: 'asc'
+    sortDirection: 'asc',
+    currentPage: 1
   }),
   computed: {
     filteredRows () {
@@ -59,6 +84,9 @@ export default {
         if (a[this.sortColumn] > b[this.sortColumn]) return 1 * modifier
         return 0
       })
+    },
+    paginatedRows () {
+      return this.sortedRows.slice((this.currentPage - 1) * this.perPage, this.currentPage * this.perPage)
     }
   },
   methods: {
@@ -82,5 +110,9 @@ export default {
   &__head {
     cursor: pointer;
   }
+}
+.pagination__wrapper {
+  display: flex;
+  justify-content: center;
 }
 </style>
