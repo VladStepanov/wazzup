@@ -93,6 +93,13 @@ export default {
       return this.current > 1
     }
   },
+  watch: {
+    totalPages (newTotal) {
+      if (newTotal < this.current) {
+        this.changePage(this.totalPages)
+      }
+    }
+  },
   methods: {
     changePage (page) {
       if (page > 1 || page < this.totalPages) {

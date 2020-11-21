@@ -15,7 +15,7 @@
           <Table
             :rows="users"
             :headers="headers"
-            :per-page="perPage"
+            :per-page="10"
           >
             <template #col.email="{ row }">{{ row.email }}</template> <!-- if we wanna style specific col -->
           </Table>
@@ -35,8 +35,6 @@ export default {
   components: { Loader, Table },
   data: () => ({
     usersFetchingPromise: null,
-    currentPage: 1,
-    perPage: 10,
     headers: [
       {
         label: 'Id',

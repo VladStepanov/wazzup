@@ -1,5 +1,10 @@
 <template>
   <div class="table">
+    <input
+      type="text"
+      v-model.trim="searchValue"
+      placeholder="Найти"
+    >
     <table>
       <thead>
         <tr>
@@ -10,7 +15,7 @@
             @click="sortBy(head.field)"
           >
             {{ head.label }}
-            <span v-if="sortColumn === head.field">
+            <span v-if="sortColumn === head.field && sortDirection">
               <template v-if="sortDirection === 'asc'">&#9650;</template>
               <template v-else-if="sortDirection === 'desc'">&#9660;</template>
             </span>
@@ -32,7 +37,7 @@
         :current="currentPage"
         :page-range="0"
         :per-page="perPage"
-        :total="rows.length"
+        :total="searchedRows.length"
         @page-change="page => currentPage = page"
       />
     </div>
@@ -62,11 +67,19 @@ export default {
       default: 10
     }
   },
-  data: () => ({
-    sortColumn: '',
-    sortDirection: 'asc',
-    currentPage: 1
-  }),
+  data () {
+    return {
+      // sort
+      sortColumn: '',
+      sortDirection: 'asc',
+
+      // pagination
+      currentPage: 1,
+
+      // search
+      searchValue: ''
+    }
+  },
   computed: {
     filteredRows () {
       // Include only described in headers row fields
@@ -85,8 +98,14 @@ export default {
         return 0
       })
     },
+    searchedRows () {
+      return this.sortedRows.filter(row => {
+        return Object.values(row)
+          .some(rowValue => String(rowValue).toLowerCase().includes(this.searchValue.toLowerCase()))
+      })
+    },
     paginatedRows () {
-      return this.sortedRows.slice((this.currentPage - 1) * this.perPage, this.currentPage * this.perPage)
+      return this.searchedRows.slice((this.currentPage - 1) * this.perPage, this.currentPage * this.perPage)
     }
   },
   methods: {
