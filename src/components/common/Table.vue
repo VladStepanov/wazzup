@@ -23,7 +23,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(row, i) in paginatedRows" :key="i" @click="$emit('click:row', row)">
+        <tr v-for="(row, i) in paginatedRows" :key="i" @click="handleRowClick(i)">
           <td v-for="(el, key) in row" :key="key">
             <slot :name="`col.${key}`" :row="row">
               {{ el }}
@@ -133,6 +133,10 @@ export default {
       }
 
       this.sortDirectionIndex++
+    },
+    handleRowClick (i) {
+      const row = this.rows[i]
+      this.$emit('click-row', row)
     }
   }
 }

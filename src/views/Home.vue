@@ -1,6 +1,13 @@
 <template>
   <div class="home">
     <button @click="fetchUsers">Load users table</button>
+    <ClosableModal v-model="isModalOpen">
+      <template v-if="modalPayload">
+        <p>Имя: {{ modalPayload.fullname }}</p>
+        <p>Адрес: {{ modalPayload.address }}</p>
+      </template>
+    </ClosableModal>
+
     <Promised :promise="usersFetchingPromise">
       <template #pending>
         <Loader />
@@ -16,6 +23,7 @@
             :rows="users"
             :headers="headers"
             :per-page="10"
+            @click-row="handleRowClick"
           >
             <template #col.email="{ row }">{{ row.email }}</template> <!-- if we wanna style specific col -->
           </Table>
@@ -28,12 +36,16 @@
 <script>
 import Loader from '@/components/common/Loader'
 import Table from '@/components/common/Table'
+import ClosableModal from '@/components/Modals/ClosableModal'
 import { mapState } from 'vuex'
 
 export default {
   name: 'Home',
-  components: { Loader, Table },
+  components: { Loader, Table, ClosableModal },
   data: () => ({
+    isModalOpen: false,
+    modalPayload: null,
+
     usersFetchingPromise: null,
     headers: [
       {
@@ -66,6 +78,10 @@ export default {
   methods: {
     fetchUsers () {
       this.usersFetchingPromise = this.$store.dispatch('usersModule/fetchUsers')
+    },
+    handleRowClick (row) {
+      this.isModalOpen = true
+      this.modalPayload = row
     }
   }
 }

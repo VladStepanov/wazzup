@@ -16,7 +16,6 @@ const actions = {
   async fetchUsers ({ commit }) {
     const users = await fetchUsers()
 
-    console.log(users)
     commit('SET_USERS', users)
   }
 }
