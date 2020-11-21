@@ -1,7 +1,32 @@
-export const state = { }
+import { fetchUsers } from '@/api/users'
 
-export const mutations = { }
+const namespaced = true
 
-export const actions = { }
+const state = {
+  users: []
+}
 
-export const getters = { }
+const mutations = {
+  SET_USERS (state, users) {
+    state.users = users
+  }
+}
+
+const actions = {
+  async fetchUsers ({ commit }) {
+    const users = await fetchUsers()
+
+    console.log(users)
+    commit('SET_USERS', users)
+  }
+}
+
+const getters = { }
+
+export default {
+  namespaced,
+  state,
+  mutations,
+  actions,
+  getters
+}

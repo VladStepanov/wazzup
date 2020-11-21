@@ -1,1 +1,1 @@
-export * as users from './users'
+export { default as usersModule } from './users'
