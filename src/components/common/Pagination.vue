@@ -102,7 +102,7 @@ export default {
   },
   methods: {
     changePage (page) {
-      if (page > 1 || page < this.totalPages) {
+      if (page > 1 || page <= this.totalPages) {
         this.$emit('page-change', page)
       }
     }
